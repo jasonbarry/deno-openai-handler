@@ -19,10 +19,12 @@ export default async function openaiHandler(endpoint: string, params) {
 
     if (!res.ok) {
       const errorMessage = await res.text();
-      console.error(
-        `OpenAI API Error: ${res.status} ${res.statusText} - ${errorMessage}`
-      );
-      throw new Error(`OpenAI API Error: ${res.status} ${res.statusText}`);
+      console.error(errorMessage);
+      return new Response(errorMessage, {
+        status: res.status,
+        statusText: res.statusText,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     console.log("Response back from OpenAI", res.body);
@@ -36,6 +38,8 @@ export default async function openaiHandler(endpoint: string, params) {
     console.error("Error while processing request:", error);
     return new Response(error.message || "Internal server error", {
       status: 500,
+      statusText: "Internal server error",
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
